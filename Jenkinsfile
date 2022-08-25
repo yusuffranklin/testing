@@ -22,7 +22,6 @@ pipeline {
       }
     }  
     
-            
     stage('Test') {
       steps {
         sh 'node test'
@@ -30,14 +29,18 @@ pipeline {
     }
 
     stage("Docker build"){
+      steps{
         sh 'docker version'
         sh 'docker build -t yusuffranklin/project:0.1 .'
         sh 'docker image list'
+      }
     }
 
     stage("Push Image to Docker Hub"){
-    	sh 'docker login -u yusuffranklin -p JFkenedy@911'
-        sh 'docker push  rahulwagh17/jhooq-docker-demo:jhooq-docker-demo'
+      steps{
+        sh 'docker login -u yusuffranklin -p JFkenedy@911'
+        sh 'docker push  yusuffranklin/project:0.1'
+      }
     }
   }
 }
