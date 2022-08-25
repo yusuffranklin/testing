@@ -1,35 +1,43 @@
 pipeline {
-    agent any 
-    stages {
-        stage('Static Analysis') {
-            steps {
-                echo 'Run the static analysis to the code' 
-            }
-        }
-        stage('Compile') {
-            steps {
-                echo 'Compile the source code' 
-            }
-        }
-        stage('Security Check') {
-            steps {
-                echo 'Run the security check against the application' 
-            }
-        }
-        stage('Run Unit Tests') {
-            steps {
-                echo 'Run unit tests from the source code' 
-            }
-        }
-        stage('Run Integration Tests') {
-            steps {
-                echo 'Run only crucial integration tests from the source code' 
-            }
-        }
-        stage('Publish Artifacts') {
-            steps {
-                echo 'Save the assemblies generated from the compilation' 
-            }
-        }
+  agent any
+    
+  tools {nodejs "node"}
+
+  environment{
+  	dockerhub=credentials('dockerhub')
+  }
+    
+  stages {
+        
+    stage('Git') {
+      steps {
+        git 'https://github.com/yusuffranklin/testing.git'
+      }
     }
+     
+    stage('Build') {
+      steps {
+        sh 'npm install'
+         sh '<<Build Command>>'
+      }
+    }  
+    
+            
+    stage('Test') {
+      steps {
+        sh 'node test'
+      }
+    }
+
+    stage("Docker build"){
+        sh 'docker version'
+        sh 'docker build -t yusuffranklin/project:0.1 .'
+        sh 'docker image list'
+    }
+
+    stage("Push Image to Docker Hub"){
+    	sh 'docker login -u yusuffranklin -p JFkenedy@911'
+        sh 'docker push  rahulwagh17/jhooq-docker-demo:jhooq-docker-demo'
+    }
+  }
 }
